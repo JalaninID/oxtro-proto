@@ -1,0 +1,62 @@
+syntax = "proto3";
+
+package plugin.v1;
+
+import "tools/v1/empty.proto";
+
+message PluginInfo {
+    string id = 1;
+    string name = 2;
+    string version = 3;
+    string author = 4;
+    string description = 5;
+    string category = 6;
+    string state = 7;
+    string homepage = 8;
+    string license = 9;
+    repeated string dependencies = 10;
+    repeated string permissions = 11;
+}
+
+message ListPluginsRequest {}
+
+message ListPluginsResponse {
+    repeated PluginInfo plugins = 1;
+}
+
+message PluginActionRequest {
+    string plugin_id = 1;
+}
+
+message PluginActionResponse {
+    bool success = 1;
+    string message = 2;
+}
+
+message PluginConfigEntry {
+    string key = 1;
+    string value = 2;
+}
+
+message GetPluginConfigRequest {
+    string plugin_id = 1;
+}
+
+message GetPluginConfigResponse {
+    repeated PluginConfigEntry entries = 1;
+}
+
+message SetPluginConfigRequest {
+    string plugin_id = 1;
+    repeated PluginConfigEntry entries = 2;
+}
+
+service PluginManager {
+    rpc ListPlugins(ListPluginsRequest) returns (ListPluginsResponse);
+    rpc InstallPlugin(PluginActionRequest) returns (PluginActionResponse);
+    rpc ActivatePlugin(PluginActionRequest) returns (PluginActionResponse);
+    rpc DeactivatePlugin(PluginActionRequest) returns (PluginActionResponse);
+    rpc UninstallPlugin(PluginActionRequest) returns (tools.v1.Empty);
+    rpc GetPluginConfig(GetPluginConfigRequest) returns (GetPluginConfigResponse);
+    rpc SetPluginConfig(SetPluginConfigRequest) returns (PluginActionResponse);
+}
