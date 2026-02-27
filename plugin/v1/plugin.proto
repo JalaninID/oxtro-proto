@@ -51,6 +51,105 @@ message SetPluginConfigRequest {
     repeated PluginConfigEntry entries = 2;
 }
 
+message PluginUiManifest {
+    string plugin_id = 1;
+    string ui_schema_version = 2;
+    string requires_host_ui_version = 3;
+    repeated NavigationItem navigation = 4;
+    repeated UiView views = 5;
+    repeated ViewExtension view_extensions = 6;
+    repeated UiAction actions = 7;
+}
+
+message NavigationItem {
+    string id = 1;
+    string label = 2;
+    string icon = 3;
+    string path = 4;
+    int32 order = 5;
+    repeated string required_permissions = 6;
+}
+
+message UiView {
+    string id = 1;
+    string type = 2;
+    string route_path = 3;
+    string layout = 4;
+    UiNode root = 5;
+    DataSource data_source = 6;
+}
+
+message UiNode {
+    string component = 1;
+    string node_id = 2;
+    map<string, string> props = 3;
+    repeated UiNode children = 4;
+}
+
+message DataSource {
+    string rpc_method = 1;
+    map<string, string> request_mapping = 2;
+    map<string, string> response_mapping = 3;
+}
+
+message ViewExtension {
+    string id = 1;
+    string target_view_id = 2;
+    int32 priority = 3;
+    repeated PatchOperation operations = 4;
+}
+
+message PatchOperation {
+    PatchOp op = 1;
+    Selector selector = 2;
+    UiNode node = 3;
+    map<string, string> set_props = 4;
+}
+
+enum PatchOp {
+    PATCH_OP_UNSPECIFIED = 0;
+    PATCH_OP_INSERT_BEFORE = 1;
+    PATCH_OP_INSERT_AFTER = 2;
+    PATCH_OP_REPLACE = 3;
+    PATCH_OP_SET_PROPS = 4;
+    PATCH_OP_REMOVE = 5;
+}
+
+message Selector {
+    SelectorBy by = 1;
+    string value = 2;
+}
+
+enum SelectorBy {
+    SELECTOR_BY_UNSPECIFIED = 0;
+    SELECTOR_BY_NODE_ID = 1;
+    SELECTOR_BY_PATH = 2;
+}
+
+message UiAction {
+    string id = 1;
+    string label = 2;
+    string type = 3;
+    string rpc_method = 4;
+    repeated string required_permissions = 5;
+    string confirm_message = 6;
+    string success_toast = 7;
+}
+
+message GetPluginUiManifestRequest {
+    string plugin_id = 1;
+}
+
+message GetPluginUiManifestResponse {
+    PluginUiManifest manifest = 1;
+}
+
+message ListActivePluginUiManifestsRequest {}
+
+message ListActivePluginUiManifestsResponse {
+    repeated PluginUiManifest manifests = 1;
+}
+
 service PluginManager {
     rpc ListPlugins(ListPluginsRequest) returns (ListPluginsResponse);
     rpc InstallPlugin(PluginActionRequest) returns (PluginActionResponse);
@@ -59,4 +158,6 @@ service PluginManager {
     rpc UninstallPlugin(PluginActionRequest) returns (tools.v1.Empty);
     rpc GetPluginConfig(GetPluginConfigRequest) returns (GetPluginConfigResponse);
     rpc SetPluginConfig(SetPluginConfigRequest) returns (PluginActionResponse);
+    rpc GetPluginUiManifest(GetPluginUiManifestRequest) returns (GetPluginUiManifestResponse);
+    rpc ListActivePluginUiManifests(ListActivePluginUiManifestsRequest) returns (ListActivePluginUiManifestsResponse);
 }
