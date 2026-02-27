@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package tools.v1;
 
+option go_package = "app/gen/tools/v1;toolsv1";
+
 message Pagination {
       int32 page = 1;
       int32 per_page = 2;
