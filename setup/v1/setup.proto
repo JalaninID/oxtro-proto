@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package setup.v1;
+
+import "tools/v1/empty.proto";
+
+message SetupStatusResponse {
+  bool is_completed = 1;
+  bool db_healthy = 2;
+  string completed_at = 3;
+}
+
+message RunSetupRequest {
+  string username = 1;
+  string email = 2;
+  string password = 3;
+}
+
+message RunSetupResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+service Setup {
+  rpc GetStatus(tools.v1.Empty) returns (SetupStatusResponse);
+  rpc RunSetup(RunSetupRequest) returns (RunSetupResponse);
+}
